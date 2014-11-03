@@ -11,6 +11,10 @@ Transform::Transform(string newVariation, int * newXValues, int * newYValues) : 
 	}
 }
 
+string Transform::getVariation() {
+	return variation;
+}
+
 string Transform::toString() {
 	stringstream ss;
 

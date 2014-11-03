@@ -11,6 +11,8 @@ class Transform{
 	public:
 	Transform(string newVariation, int * newXValues, int * newYalues);
 
+	std::string getVariation();
+
 	std::string toString();
 	std::string toString(double weight, double colour);
 }
