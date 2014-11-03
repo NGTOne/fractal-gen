@@ -4,7 +4,7 @@
 
 namespace std;
 
-Transform::Transform(int newVariationIndex, int * newXValues, int * newYValues) : variationIndex(newVariationIndex) {
+Transform::Transform(string newVariation, int * newXValues, int * newYValues) : variation(newVariation) {
 	for (int i = 0; i < 3; i++) {
 		xValues[i] = newXValues[i];
 		yValues[i] = newYValues[i];
@@ -14,7 +14,7 @@ Transform::Transform(int newVariationIndex, int * newXValues, int * newYValues) 
 string Transform::toString() {
 	stringstream ss;
 
-	ss << VARIATIONS[variationIndex] << "=\"1\" coefs=\"";
+	ss << variation << "=\"1\" coefs=\"";
 	
 	for (int i = 0; i < 3; i++) {
 		ss << xValues[i] << " " << yValues[i] << " ";
