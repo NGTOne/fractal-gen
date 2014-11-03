@@ -6,8 +6,10 @@
 #include <chrono>
 
 FractalFitness::FractalFitness() {
-
+	numTransforms = 0;
 }
+
+FractalFitness::FractalFitness(int newNumTransforms): numTransforms(newNumTransforms) {};
 
 PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, int genomeLength) {
 	Individual * tempIndividual;
@@ -18,6 +20,9 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 	int length = 0;
 	int * fullIndexes = NULL;
 	GenePool ** fullPools = NULL;
+	string variations[numTransforms];
+	int xCoefs[numTransforms][3];
+	int yCoefs[numTransforms][3];
 
 	//Collect the genes for all the fractals
 	for (int i = 0; i < genomeLength; i++) {
@@ -28,32 +33,20 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 		GenePool ** tempPools = tempGenome->getGenePools();
 		int * tempIndexes = tempGenome->getGenome();
 
-		tempGenomeList = (Genome**)realloc(tempGenomeList, (sizeof(Genome) * numGenomes) + sizeof(Genome));
-
-		tempGenomeList[numGenomes++] = tempIndividual->getGenome();
-	}
-
-	//Get the length of the fully assembled genome and flatten out the
-	//tree
-	//This will give us the parameters for each transform
-	for (int i = 0; i < numGenomes; i++) {
-		length += tempGenomeList[i]->getGenomeLength();
-		fullIndexes = (int*)realloc(fullIndexes, sizeof(int)*length);
-		fullPools = (GenePool**)realloc(fullPools, sizeof(GenePool*)*length);
-
-		int currentInternalIndex = 0;
-		int * tempIndexes = tempGenomeList[i]->getGenome();
-		GenePool ** tempPools = tempGenomeList[i]->getGenePools();
-
-		for (int k = length - tempGenomeList[i]->getGenomeLength(); k < length; k++) {
-			fullIndexes[k] = tempIndexes[currentInternalIndex];
-			fullPools[k] = tempPools[currentInternalIndex++];
+		variations[i] = (string)tempPools[0]->getIndex(tempIndexes[0]);
+		
+		for (int k = 1; k < 4; k++) {
+			xCoefs[i][k-1] = *(int*)tempPools[k]->getIndex(tempIndexes[k]);
+			yCoefs[i][k-1] = *(int*)tempPools[k+3]->getIndex(tempIndexes[k+3]);
 		}
 	}
 
-	free(tempGenomeList);
+	Transform ** allTransforms = malloc(sizeof(Transform*)*numTransforms);
 
-
+	//Now we create a Transform for each member of our genome
+	for (int i = 0; i < numTransforms; i++) {
+		allTransforms[i] = new Transform(variations[i], xCoefs[i], yCoefs[i]);
+	}
 
 	return returnProperties;
 }

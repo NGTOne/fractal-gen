@@ -3,6 +3,8 @@
 #include <libHierGA/HierGA.hpp>
 #include <string>
 
+namespace std;
+
 int main(void) {
 	int numTransforms = 5;
 
@@ -16,7 +18,7 @@ int main(void) {
 		//TODO: Make it possible for one transform to use multiple
 		//variations
 		baseGenes[i] = (GenePool**)malloc(sizeof(GenePool*) * 7);
-		baseGenes[i][0] = new NonHierarchicalGenePool(VARIATIONS, sizeof(VARATIONS)/sizeof(char*));
+		baseGenes[i][0] = new NonHierarchicalGenePool<string>(VARIATIONS, sizeof(VARATIONS)/sizeof(string));
 	}
 
 	//Set up the bottom level of the hierarchy
