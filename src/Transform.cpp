@@ -1,0 +1,36 @@
+#include "Transform.cpp"
+#include "FractalGen.hpp"
+#include <string>
+
+namespace std;
+
+Transform::Transform(int newVariationIndex, int * newXValues, int * newYValues) : variationIndex(newVariationIndex) {
+	for (int i = 0; i < 3; i++) {
+		xValues[i] = newXValues[i];
+		yValues[i] = newYValues[i];
+	}
+}
+
+string Transform::toString() {
+	stringstream ss;
+
+	ss << VARIATIONS[variationIndex] << "=\"1\" coefs=\"";
+	
+	for (int i = 0; i < 3; i++) {
+		ss << xValues[i] << " " << yValues[i] << " ";
+	}
+
+	ss << "\" opacity=\"1\"";
+
+	return ss.str();
+}
+
+string Transform::toString(double weight, double colour) {
+	stringstream ss;
+
+	ss << "<xform weight=\"" << weight << "\" color=\"" << color << "\" ";
+
+	ss << toString() << ">";
+
+	return ss.str();
+}

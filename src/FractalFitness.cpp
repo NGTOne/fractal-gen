@@ -1,5 +1,6 @@
 #include "FractalFitness.hpp"
 #include "FractalGen.hpp"
+#include "Transform.hpp"
 #include <libHierGA/HierGA.hpp>
 #include <string>
 #include <chrono>
