@@ -26,7 +26,7 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 	int yCoefs[numTransforms][3];
 
 	//Collect the genes for all the fractals
-	for (int i = 0; i < genomeLength; i++) {
+	for (int i = 0; i < numTransforms; i++) {
 		tempIndividual = (Individual*)pools[i]->getIndex(indexes[i]);
 		tempGenome = tempIndividual->getGenome();
 
@@ -89,6 +89,20 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 		flameFile << allTransforms[i]->toString(1/numTransforms, 0.5*i);
 		flameFile << "\n";
 	}
+
+	//Write the colour palette
+	flameFile << "<palette count=\"256\" format=\"RGB\">\n";
+	flameFile << (string)pools[genomeLength-1]->getIndex(indexes[genomeLength-1]);
+
+	//End the file
+	flameFile << "</palette>\n</flame>\n</flames>";
+
+	int fitness;
+
+	printf("Please rate flame %s.\n", fileName);
+	scanf("%d", &fitness);
+
+	returnProperties = new PropertiesList(fitness);
 
 	return returnProperties;
 }
