@@ -43,7 +43,7 @@ int main(void) {
 	MutationOperation ** bottomLevelMutations = (MutationOperation**)malloc(sizeof(MutationOperation*) * numTransforms);
 
 	FitnessPropagator * myPropagator = new DownPropagator();
-	ToStringFunction * fractToString = new FractalToString();
+	ToStringFunction * fractToString = new FractalToString(numTransforms);
 	ToStringFunction * xformToString = new TransformToString();
 	
 	for (int i = 0; i < numTransforms; i++) {

@@ -18,8 +18,11 @@ class FractalToString : public ToStringFunction {
 	private:
 
 	protected:
+	int numTransforms;
 
 	public:
+	FractalToString();
+	FractalToString(int numTransforms);
 	std::string toString(GenePool ** pools, int * indexes, int genomeLength);
 };
 

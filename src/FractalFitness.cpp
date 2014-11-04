@@ -106,3 +106,47 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 
 	return returnProperties;
 }
+
+FractalToString::FractalToString() {
+	numTransforms = 0;
+}
+
+FractalToString::FractalToString(int newNumTransforms) : numTransforms(newNumTransforms) {}
+
+string FractalToString::toString(GenePool ** pools, int * indexes, int genomeLength) {
+	stringstream ss;
+
+	Individual * tempIndividual;
+
+	for (int i = 0; i < numTransforms-1; i++) {
+		tempIndividual = (Individual*)pools[i]->getIndex(indexes[i]);
+		ss << tempIndividual->toString() << "\n";
+	}
+	
+	ss << "Palette index: " << indexes[numTransforms-1] << "\n";
+
+	return ss.str();
+}
+
+string TransformToString::toString(GenePool ** pools, int * indexes, int genomeLength) {
+	stringstream ss;
+
+	int xcoefs[3];
+	int ycoefs[3];
+	string variation;
+
+	for (int i = 1; i < 4; i++) {
+		xcoefs[i] = *(int*)pools[i]->getIndex(indexes[i]);
+		ycoefs[i] = *(int*)pools[i+3]->getIndex(indexes[i+3]);
+	}
+
+	variation = (string)pools[0]->getIndex(indexes[0]);
+
+	Transform * tempTransform = new Transform(variation, xcoefs, ycoefs);
+
+	ss << tempTransform->toString() << "\n";
+
+	delete(tempTransform);
+
+	return ss.str();
+}
