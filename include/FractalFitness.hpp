@@ -1,4 +1,4 @@
-#include <libHierGA/hierGA.hpp>
+#include <libHierGA/HierGA.hpp>
 #include <string>
 #pragma once
 

@@ -1,7 +1,8 @@
-#include "Transform.cpp"
+#include "Transform.hpp"
 #include <string>
+#include <sstream>
 
-namespace std;
+using namespace std;
 
 Transform::Transform(string newVariation, int * newXValues, int * newYValues) : variation(newVariation) {
 	for (int i = 0; i < 3; i++) {
@@ -31,7 +32,7 @@ string Transform::toString() {
 string Transform::toString(double weight, double colour) {
 	stringstream ss;
 
-	ss << "<xform weight=\"" << weight << "\" color=\"" << color << "\" ";
+	ss << "<xform weight=\"" << weight << "\" color=\"" << colour << "\" ";
 
 	ss << toString() << ">";
 

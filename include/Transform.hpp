@@ -1,18 +1,19 @@
 #include <string>
+#pragma once
 
 class Transform{
 	private:
 
 	protected:
-	string variation;
+	std::string variation;
 	int xValues[3];
 	int yValues[3];
 
 	public:
-	Transform(string newVariation, int * newXValues, int * newYalues);
+	Transform(std::string newVariation, int * newXValues, int * newYalues);
 
 	std::string getVariation();
 
 	std::string toString();
 	std::string toString(double weight, double colour);
-}
+};

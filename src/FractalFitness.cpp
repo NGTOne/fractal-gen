@@ -5,6 +5,9 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
+using namespace std;
 
 FractalFitness::FractalFitness() {
 	numTransforms = 0;
@@ -34,7 +37,7 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 		GenePool ** tempPools = tempGenome->getGenePools();
 		int * tempIndexes = tempGenome->getGenome();
 
-		variations[i] = (string)tempPools[0]->getIndex(tempIndexes[0]);
+		variations[i] = *(string*)tempPools[0]->getIndex(tempIndexes[0]);
 		
 		for (int k = 1; k < 4; k++) {
 			xCoefs[i][k-1] = *(int*)tempPools[k]->getIndex(tempIndexes[k]);
@@ -42,29 +45,29 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 		}
 	}
 
-	Transform ** allTransforms = malloc(sizeof(Transform*)*numTransforms);
+	Transform ** allTransforms = (Transform**)malloc(sizeof(Transform*)*numTransforms);
 
 	//Now we create a Transform for each member of our genome
 	for (int i = 0; i < numTransforms; i++) {
 		allTransforms[i] = new Transform(variations[i], xCoefs[i], yCoefs[i]);
 	}
 
-	unsigned file-time = chrono::system_clock::now().time_since_epoch().count();
+	unsigned fileTime = chrono::system_clock::now().time_since_epoch().count();
 
 	stringstream fileName;
-	filename << "fractal-gen-" << file-time;
+	fileName << "fractal-gen-" << fileTime;
 
 	//And we write it all to a flame file
 	ofstream flameFile;
-	flameFile.open(filename.str(), ios::app);
+	flameFile.open(fileName.str(), ios::app);
 
 	//First line - we use the system time as the name
-	flameFile << "<flames name=\"fractal-gen-" << file-time << "\">\n";
+	flameFile << "<flames name=\"fractal-gen-" << fileTime << "\">\n";
 
 	//This line contains metadata about the particular flame we're
 	//looking at - visual and logistical information that doesn't
 	//affect the properties of the fractal itself
-	flameFile << "<flame name=\"" << file-time << 
+	flameFile << "<flame name=\"" << fileTime << 
                      "\" version=\"Apophysis 7x\" size=\"1920 1080\"" <<
                      "center=\"0 0 0 \" scale=\"300\" oversample=\"1\"" <<
                      "filter=\"0.5\" quality=\"50\" background=\"0 0 0 \"" <<
@@ -92,14 +95,14 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 
 	//Write the colour palette
 	flameFile << "<palette count=\"256\" format=\"RGB\">\n";
-	flameFile << (string)pools[genomeLength-1]->getIndex(indexes[genomeLength-1]);
+	flameFile << *(string*)pools[genomeLength-1]->getIndex(indexes[genomeLength-1]);
 
 	//End the file
 	flameFile << "</palette>\n</flame>\n</flames>";
 
 	int fitness;
 
-	printf("Please rate flame %s.\n", fileName);
+	cout << "Please rate flame " << fileName << ".\n";
 	scanf("%d", &fitness);
 
 	returnProperties = new PropertiesList(fitness);
@@ -140,7 +143,7 @@ string TransformToString::toString(GenePool ** pools, int * indexes, int genomeL
 		ycoefs[i] = *(int*)pools[i+3]->getIndex(indexes[i+3]);
 	}
 
-	variation = (string)pools[0]->getIndex(indexes[0]);
+	variation = *(string*)pools[0]->getIndex(indexes[0]);
 
 	Transform * tempTransform = new Transform(variation, xcoefs, ycoefs);
 

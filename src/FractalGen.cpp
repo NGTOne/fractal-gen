@@ -2,18 +2,18 @@
 #include <libHierGA/HierGA.hpp>
 #include <string>
 
-namespace std;
+using namespace std;
 
 int main(void) {
 	int numTransforms = 5;
 
 	//TODO: Implement proper support for non-discrete gene pools
 	//This is an acceptable hack for now
-	const double TRANSFORM_COEFS[] = {-1, -0.9, -0.8, -0.7, -0.6, -0.5,
+	double TRANSFORM_COEFS[] = {-1, -0.9, -0.8, -0.7, -0.6, -0.5,
                                           -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2,
                                           0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
-	const string VARIATIONS[] = {"linear", "flatten", "sinusoidal",
+	string VARIATIONS[] = {"linear", "flatten", "sinusoidal",
                              "spherical", "swirl", "horseshoe", "polar",
                              "disc", "spiral", "hyperbolic", "diamond",
                              "eyefish", "bubble", "cylinder"};
@@ -28,7 +28,7 @@ int main(void) {
 		//TODO: Make it possible for one transform to use multiple
 		//variations
 		baseGenes[i] = (GenePool**)malloc(sizeof(GenePool*) * 7);
-		baseGenes[i][0] = new NonHierarchicalGenePool<string>(VARIATIONS, sizeof(VARATIONS)/sizeof(string));
+		baseGenes[i][0] = new NonHierarchicalGenePool<string>(VARIATIONS, 14);
 
 		for (int k = 1; k < 7; k++) {
 			baseGenes[i][k] = new NonHierarchicalGenePool<double>(TRANSFORM_COEFS, 21);
@@ -37,7 +37,7 @@ int main(void) {
 
 	//Set up the bottom level of the hierarchy
 	//Each Individual at this level deals with parameters for transforms
-	SelectionStrategy ** bottomStrategies = (SelectionStrategy**)malloc(sizeof(SelectionStrategy*) * numTransforms);
+	SelectionStrategy ** bottomLevelStrategies = (SelectionStrategy**)malloc(sizeof(SelectionStrategy*) * numTransforms);
 	GenerationModel ** bottomLevelModels = (GenerationModel**)malloc(sizeof(GenerationModel*) * numTransforms);
 	CrossoverOperation ** bottomLevelCrossovers = (CrossoverOperation**)malloc(sizeof(CrossoverOperation*) * numTransforms);
 	MutationOperation ** bottomLevelMutations = (MutationOperation**)malloc(sizeof(MutationOperation*) * numTransforms);
@@ -71,7 +71,7 @@ int main(void) {
 	//will do for now
 	//These are gradients that are known by manual experimentation to 
 	//produce visually interesting results
-	const string GRADIENTS = {
+	string GRADIENTS[] = {
 	"      00000003000501000C00011302051A040921060C24091028\n"
 	"      0F1736111A3D141E4416214A1825511925581A255F1A2663\n"
 	"      1B27681F2978202B7F222D86232D8A242D8E242B8E24298E\n"
@@ -236,7 +236,7 @@ int main(void) {
 	"      020C4C010E5501105802125B051A68061D7108217A08237E\n"
 	"      082682082683082785082583082184061B81041B7D021B79\n"
 	"      021B78021B78041C79071E7A13308913348A13388C13368A\n"
-}
+};
 
 	//Add the palettes to the genome of our top-level Individuals
 	GenePool * palettePool = new NonHierarchicalGenePool<string>(GRADIENTS, 5);
@@ -244,14 +244,14 @@ int main(void) {
 	bottomPools[numTransforms] = palettePool;
 
 	SelectionStrategy * topLevelStrategy = new TournamentSelection(0.5);
-	GenerationModel * topLevelModel = new GAGeneration(2, bottomLevelStrategy);
+	GenerationModel * topLevelModel = new GAGeneration(2, topLevelStrategy);
 	CrossoverOperation * topLevelCrossover = new NPointCrossover(2);
 	MutationOperation * topLevelMutation = new UniformMutation(0.2);
 	FitnessFunction * topLevelFunction = new FractalFitness(numTransforms);
 
 	Individual * templateIndividual = new Individual(bottomPools, numTransforms+1, topLevelCrossover, topLevelMutation, topLevelFunction, fractToString);
 
-	GenePool * topLevelPool = new HierarchicalGenePool(10, templateIndividual, 10, 1, topLevelMode, NULL, myPropagator);
+	GenePool * topLevelPool = new HierarchicalGenePool(10, templateIndividual, 10, 1, topLevelModel, NULL, myPropagator);
 
 	delete(templateIndividual);
 
