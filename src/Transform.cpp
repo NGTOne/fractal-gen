@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Transform::Transform(string newVariation, int * newXValues, int * newYValues) : variation(newVariation) {
+Transform::Transform(string newVariation, double * newXValues, double * newYValues) : variation(newVariation) {
 	for (int i = 0; i < 3; i++) {
 		xValues[i] = newXValues[i];
 		yValues[i] = newYValues[i];
@@ -34,7 +34,7 @@ string Transform::toString(double weight, double colour) {
 
 	ss << "<xform weight=\"" << weight << "\" color=\"" << colour << "\" ";
 
-	ss << toString() << ">";
+	ss << toString() << " />";
 
 	return ss.str();
 }

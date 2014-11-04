@@ -25,8 +25,8 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 	int * fullIndexes = NULL;
 	GenePool ** fullPools = NULL;
 	string variations[numTransforms];
-	int xCoefs[numTransforms][3];
-	int yCoefs[numTransforms][3];
+	double xCoefs[numTransforms][3];
+	double yCoefs[numTransforms][3];
 
 	//Collect the genes for all the fractals
 	for (int i = 0; i < numTransforms; i++) {
@@ -40,8 +40,8 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 		variations[i] = *(string*)tempPools[0]->getIndex(tempIndexes[0]);
 		
 		for (int k = 1; k < 4; k++) {
-			xCoefs[i][k-1] = *(int*)tempPools[k]->getIndex(tempIndexes[k]);
-			yCoefs[i][k-1] = *(int*)tempPools[k+3]->getIndex(tempIndexes[k+3]);
+			xCoefs[i][k-1] = *(double*)tempPools[k]->getIndex(tempIndexes[k]);
+			yCoefs[i][k-1] = *(double*)tempPools[k+3]->getIndex(tempIndexes[k+3]);
 		}
 	}
 
@@ -57,9 +57,12 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 	stringstream fileName;
 	fileName << "fractal-gen-" << fileTime;
 
+	stringstream fullFileName;
+	fullFileName << fileName.str() << ".flame";
+
 	//And we write it all to a flame file
 	ofstream flameFile;
-	flameFile.open(fileName.str(), ios::app);
+	flameFile.open(fullFileName.str(), ios::app);
 
 	//First line - we use the system time as the name
 	flameFile << "<flames name=\"fractal-gen-" << fileTime << "\">\n";
@@ -68,28 +71,52 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 	//looking at - visual and logistical information that doesn't
 	//affect the properties of the fractal itself
 	flameFile << "<flame name=\"" << fileTime << 
-                     "\" version=\"Apophysis 7x\" size=\"1920 1080\"" <<
-                     "center=\"0 0 0 \" scale=\"300\" oversample=\"1\"" <<
-                     "filter=\"0.5\" quality=\"50\" background=\"0 0 0 \"" <<
-                     "brightness=\"4\" gamma=\"4\" gamma_threshold=\"0.01\"" <<
-                     "estimator_radius=\"9\" estimator_minimum=\"0\"" <<
+                     "\" version=\"Apophysis 7x\" size=\"1920 1080\" " <<
+                     "center=\"0 0\" scale=\"300\" oversample=\"1\" " <<
+                     "filter=\"0.5\" quality=\"50\" background=\"0 0 0\" " <<
+                     "brightness=\"4\" gamma=\"4\" gamma_threshold=\"0.01\" " <<
+                     "estimator_radius=\"9\" estimator_minimum=\"0\" " <<
                      "estimator_curve=\"0.4\" enable_de=\"0\" plugins=\"";
 
-	//We need to write out which variations we used
-	for (int i = 0; i < numTransforms-1; i++) {
-		flameFile << allTransforms[i]->getVariation() << " ";
+	//We need to write out which variations we used, and only do it once
+	//for each
+	string variationsUsed[numTransforms];
+	bool written[numTransforms];
+
+	for (int i = 0; i < numTransforms; i++) {
+		variationsUsed[i] = allTransforms[i]->getVariation();
+		written[i] = false;
 	}
-	flameFile << allTransforms[numTransforms-1]->getVariation() << "\" ";
+
+	for (int i = 0; i < numTransforms; i++) {
+		string tempVariation = variationsUsed[i];
+		for (int k = 0; k < i; k++) {
+			if (variationsUsed[k].compare(tempVariation) == 0) {
+				written[i] = true;
+			}
+		}
+
+		if (written[i] == false) {
+			flameFile << tempVariation;
+			written[i] = true;
+		}
+
+		if (i < numTransforms - 1) {
+			flameFile << " ";
+		}
+	}
+
+	flameFile << "\" ";
 
 	//The rest of the flame descriptor
 	//TODO: Find out what the "curves" value does
-	flameFile << "new_linear=\"1\"" <<
-                     "curves=\"0 0 1 0 0 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 0 0" <<
-                     " 1 0 0 1 1 1 1 1 1 1 0 0 1 0 0 1 1 1 1 1 1 1\" >\n";
+	flameFile << "new_linear=\"1\" " <<
+                     "curves=\"0 0 1 0 0 1 1 1 1 1 1 1 0 0 1 0 0 1 1 1 1 1 " <<
+                     "1 1 0 0 1 0 0 1 1 1 1 1 1 1 0 0 1 0 0 1 1 1 1 1 1 1\">\n";
 
 	//Now we write out our transforms
 	for (int i = 0; i < numTransforms; i++) {
-		flameFile << allTransforms[i]->toString(1/numTransforms, 0.5*i);
+		flameFile << allTransforms[i]->toString(1.0/numTransforms, 0.5*(double)i);
 		flameFile << "\n";
 	}
 
@@ -100,9 +127,11 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 	//End the file
 	flameFile << "</palette>\n</flame>\n</flames>";
 
+	flameFile.close();
+
 	int fitness;
 
-	cout << "Please rate flame " << fileName << ".\n";
+	cout << "Please rate flame " << fileName.str() << ".\n";
 	scanf("%d", &fitness);
 
 	returnProperties = new PropertiesList(fitness);
@@ -134,13 +163,13 @@ string FractalToString::toString(GenePool ** pools, int * indexes, int genomeLen
 string TransformToString::toString(GenePool ** pools, int * indexes, int genomeLength) {
 	stringstream ss;
 
-	int xcoefs[3];
-	int ycoefs[3];
+	double xcoefs[3];
+	double ycoefs[3];
 	string variation;
 
 	for (int i = 1; i < 4; i++) {
-		xcoefs[i] = *(int*)pools[i]->getIndex(indexes[i]);
-		ycoefs[i] = *(int*)pools[i+3]->getIndex(indexes[i+3]);
+		xcoefs[i] = *(double*)pools[i]->getIndex(indexes[i]);
+		ycoefs[i] = *(double*)pools[i+3]->getIndex(indexes[i+3]);
 	}
 
 	variation = *(string*)pools[0]->getIndex(indexes[0]);

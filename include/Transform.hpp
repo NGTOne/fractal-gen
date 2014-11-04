@@ -6,11 +6,11 @@ class Transform{
 
 	protected:
 	std::string variation;
-	int xValues[3];
-	int yValues[3];
+	double xValues[3];
+	double yValues[3];
 
 	public:
-	Transform(std::string newVariation, int * newXValues, int * newYalues);
+	Transform(std::string newVariation, double * newXValues, double * newYalues);
 
 	std::string getVariation();
 
