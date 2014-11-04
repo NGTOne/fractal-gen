@@ -22,3 +22,12 @@ class FractalToString : public ToStringFunction {
 	public:
 	std::string toString(GenePool ** pools, int * indexes, int genomeLength);
 };
+
+class TransformToString : public ToStringFunction {
+	private:
+
+	protected:
+
+	public:
+	std::string toString(GenePool ** pools, int * indexes, int genomeLength);
+};

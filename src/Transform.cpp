@@ -1,5 +1,4 @@
 #include "Transform.cpp"
-#include "FractalGen.hpp"
 #include <string>
 
 namespace std;
