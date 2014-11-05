@@ -116,7 +116,7 @@ PropertiesList * FractalFitness::checkFitness(GenePool ** pools, int * indexes, 
 
 	//Now we write out our transforms
 	for (int i = 0; i < numTransforms; i++) {
-		flameFile << allTransforms[i]->toString(1.0/numTransforms, 0.5*(double)i);
+		flameFile << allTransforms[i]->toString(1.0/numTransforms, i*(1.0/numTransforms));
 		flameFile << "\n";
 	}
 
